@@ -14,6 +14,13 @@ csrf = CSRFProtect()
 def load():
     return render_template("index.html")
 
+@app.route("/ABC_Completo", methods=["GET", "POST"])
+def abc():
+    alumForm = forms.UserForm2(request.form)
+    alumno = Alumnos.query.all()
+
+    return render_template("ABC_Completo.html", alumnos = alumno)
+
 @app.route("/index", methods=["GET", "POST"])
 def index():
     create_form = forms.UserForm2(request.form)
