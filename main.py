@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request #importe de las librerias
+from flask import Flask, render_template, request, redirect, url_for #importe de las librerias
 from flask import flash
 from flask_wtf.csrf import CSRFProtect
 from flask import g
@@ -13,6 +13,51 @@ csrf = CSRFProtect()
 @app.route("/")
 def load():
     return render_template("index.html")
+
+@app.route("/modificar", methods=["GET", "POST"])
+def modificar():
+    create_form = forms.UserForm2(request.form)
+    if request.method == "GET":
+        id=request.args.get('id')
+        alumn = db.session.query(Alumnos).filter(Alumnos.id==id).first()
+        create_form.id.data = request.args.get('id')
+        create_form.nombre.data = alumn.nombre
+        create_form.apaterno.data = alumn.apaterno
+        create_form.amaterno.data = alumn.amaterno
+        create_form.email.data = alumn.email
+
+    if request.method == "POST":
+        id=create_form.id.data
+        alum = db.session.query(Alumnos).filter(Alumnos.id==id).first()
+        alum.nombre=create_form.nombre.data
+        alum.apaterno=create_form.apaterno.data
+        alum.amaterno=create_form.amaterno.data
+        alum.email=create_form.email.data
+        db.session.add(alum)
+        db.session.commit();
+        return redirect(url_for("abc"))
+    return render_template("modificar.html", form=create_form)
+
+@app.route("/eliminar", methods=["GET", "POST"])
+def eliminar():
+    create_form = forms.UserForm2(request.form)
+    if request.method == "GET":
+        id=request.args.get('id')
+        alumn = db.session.query(Alumnos).filter(Alumnos.id==id).first()
+        create_form.id.data = request.args.get('id')
+        create_form.nombre.data = alumn.nombre
+        create_form.apaterno.data = alumn.apaterno
+        create_form.amaterno.data = alumn.amaterno
+        create_form.email.data = alumn.email
+
+    if request.method == "POST":
+        id=create_form.id.data
+        alum = Alumnos.query.get(id)
+        db.session.delete(alum)
+        db.session.commit();
+        return redirect(url_for("abc"))
+    
+    return render_template("eliminar.html", form=create_form)
 
 @app.route("/ABC_Completo", methods=["GET", "POST"])
 def abc():
